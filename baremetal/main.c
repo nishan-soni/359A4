@@ -1,68 +1,57 @@
-// 2-gpio-test  main.c - demo the gpio pins
-
-
 #include <unistd.h>
 #include <stdio.h>
-//#include "gpio.h"
 #include "uart.h"
 #include "timer.h"
 #include "i2c.h"
 #include "bmi270.h"
+#include <stdlib.h>
 
+#define ACCEL_THRESHOLD 400 // The threshold that our acceleration needs to pass to be valid
 
+struct accelerations
+{
+    int Ax;
+    int Ay;
+    int Az;
+};
 
-
-
-// convert unsigned int into character string in base 16
-void xtoa( unsigned int n, char *s, int size ) {
-    int i;
-
-    // start with null termination - we are interting things backwards
-    s[0] = 0;
-
-    // insert the digits starting with least significant
-    i = 1;      // start after the null termination
-    do {
-        int lsdigit = n % 16;
-        if ( lsdigit < 10 )
-            s[i++] = lsdigit % 10 + '0';
-        else
-            s[i++] = lsdigit-10 + 'a';
-        n /= 16;
-    } while( n != 0  && i < size );
-
-    // reverse string
-    char temp;
-    i--;
-    for( int j = 0; j < i; j++ ) {
-        temp = s[j];
-        s[j] = s[i];
-        s[i--] = temp;
+/**
+ * Check if the absolute value of one number (num) is greater than two others
+*/
+unsigned int compareThree(int num, int compare1, int compare2) {
+    if (abs(num) > abs(compare1) & abs(num) > abs(compare2)) {
+        return 1;
     }
-}
-
-int itoc( int n, char *s, int i ) {
-    if ( n < 0 ) {
-        s[i++] = '-';
-        i = itoc( -n, s, i );
-    } else {
-        if ( n >= 10 )
-            i = itoc( n / 10, s, i );
-        s[i++] = n % 10 + '0';
-        s[i] = 0;
-    }
-
-    return i;
-}
-
-void uart_int( int v ) {
-    char buffer[64];
     
-    itoc( v, buffer, 0 );
-    uart_puts( buffer );
+    return 0;
 }
 
+/**
+ * Given the accelerometer values, output the direction (as an unsigned int) that our I2C device is moving
+ * Directions: 0: None, 1: Left, 2: Right, 3: Down, 4: Up
+*/
+unsigned int generateDirection(struct accelerations *accel) {
 
+    // Check if movement is mostly in the horizontal direction
+    if (abs(accel -> Ax) > abs(accel -> Ay)) {
+        if (accel -> Ax < 0) {
+            return 1; // Left direction
+        }
+        return 2; // Right direction
+    }
+
+    // Check if movement is mostly in vertical direction (Y)
+    if (abs(accel -> Ay) > abs(accel -> Ax)) {
+        if (accel -> Ay < 0) {
+            return 3; // Left direction
+        }
+        return 4; // Right direction
+    }
+
+    return 0;
+
+
+}
 
 
 int main() {
@@ -79,11 +68,8 @@ int main() {
     if ( error ) {
         uart_puts( "BMI270 not found\n" );
     } else {
-        // uart_puts( "BMI270 found\n" );
+        uart_puts( "BMI270 found\n" );
     }
-
-    uart_send('U');
-
 
     bmi270LoadConfigFile();
     
@@ -103,9 +89,17 @@ int main() {
     // uart_puts( "\n\n" );
     
     int aVals[6];
+    struct acclerations accel;
+
     while( 1 ) {
         bmi270GetAllData( aVals );
-        uart_send("N");
+
+        accel.Ax = aVals[0]
+        accel.Ay = aVals[1]
+        accel.Az = aVals[2]
+
+        uart_puts(generateDirection(&accel))
+
         // uart_puts( "Ax: " );
         // uart_int( aVals[0] );
         // uart_puts( "  Ay: " );
@@ -119,12 +113,8 @@ int main() {
         // uart_puts( "  Gz: " );
         // uart_int( aVals[5] );
         // uart_puts( "\n" );
-        
-        
         delay( 10 );
     }
-
-    while(1);
 }
 
 
