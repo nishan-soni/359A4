@@ -10,39 +10,6 @@
 
 
 /**
- * Check if the absolute value of one number (num) is greater than two others
-*/
-unsigned int compareThree(int num, int compare1, int compare2) {
-    if (abs(num) > abs(compare1) & abs(num) > abs(compare2)) {
-        return 1;
-    }
-    
-    return 0;
-}
-
-int itoc( int n, char *s, int i ) {
-    if ( n < 0 ) {
-        s[i++] = '-';
-        i = itoc( -n, s, i );
-    } else {
-        if ( n >= 10 )
-            i = itoc( n / 10, s, i );
-        s[i++] = n % 10 + '0';
-        s[i] = 0;
-    }
-
-    return i;
-}
-
-void uart_int( int v ) {
-    char buffer[64];
-    
-    itoc( v, buffer, 0 );
-    uart_puts( buffer );
-}
-
-
-/**
  * Given the accelerometer values, output the direction (as an unsigned int) that our I2C device is moving
  * Directions: 0: None, 1: Left, 2: Right, 3: Down, 4: Up
 */
@@ -51,21 +18,20 @@ char generateDirection(struct accelerations *accel) {
     // Check if movement is mostly in the horizontal direction
     if (abs(accel -> Ax) > abs(accel -> Ay) & (abs(accel -> Ax) > 500) ) {
         if (accel -> Ax < 0) {
-            return 'u'; // Left direction
+            return 'u'; // Up
         }
-        return 'd'; // Right direction
+        return 'd'; // Down
     }
 
     // Check if movement is mostly in vertical direction (Y)
     if ((abs(accel -> Ay) > abs(accel -> Ax)) & (abs(accel -> Ay) > 500) ) {
         if (accel -> Ay < 0) {
-            return 'r'; // Left direction
+            return 'r'; // Right
         }
-        return 'l'; // Right direction
+        return 'l'; // Left
     }
 
     return 'n';
-
 
 }
 
@@ -73,12 +39,12 @@ char generateDirection(struct accelerations *accel) {
 int main() {
     delay(1000);
     
-    // uart_puts( "\n----------------------------------------\n\nWelcome\n\n" );
+    uart_puts( "\n----------------------------------------\n\nWelcome\n\n" );
     
     uart_init();
     initI2CPins();
     
-    // uart_puts( "init done\n" );
+    uart_puts( "init done\n" );
     
     int error = bmi270Init( 0x69 );
     if ( error ) {
@@ -102,7 +68,7 @@ int main() {
     bmi270EnableGyrNoisePerf( );
     bmi270EnableGyrFilterPerf( );
     
-    // uart_puts( "\n\n" );
+    uart_puts( "\n\n" );
     
     int aVals[6];
     struct accelerations accel;
@@ -116,19 +82,6 @@ int main() {
 
         uart_send(generateDirection(&accel));
 
-        // uart_puts( "Ax: " );
-        // uart_int( aVals[0] );
-        // uart_puts( "  Ay: " );
-        // uart_int( aVals[1] );
-        // uart_puts( "  Az: " );
-        // uart_int( aVals[2] );
-        // uart_puts( "  Gx: " );
-        // uart_int( aVals[3] );
-        // uart_puts( "  Gy: " );
-        // uart_int( aVals[4] );
-        // uart_puts( "  Gz: " );
-        // uart_int( aVals[5] );
-        // uart_puts( "\n" );
         delay( 10 );
     }
 }

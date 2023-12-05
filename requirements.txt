@@ -1,2 +1,2 @@
 pygame
-smbus2
+pyserial
