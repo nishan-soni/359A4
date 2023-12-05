@@ -13,7 +13,7 @@ def get_move():
     s = serial.Serial(port = PORT, baudrate=BAUD)
     while True:
         b = s.read()
-        print(b)
+        print(b.decode('ascii'))
 
 
 

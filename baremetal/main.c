@@ -8,12 +8,6 @@
 
 #define ACCEL_THRESHOLD 400 // The threshold that our acceleration needs to pass to be valid
 
-struct accelerations
-{
-    int Ax;
-    int Ay;
-    int Az;
-};
 
 /**
  * Check if the absolute value of one number (num) is greater than two others
@@ -26,29 +20,51 @@ unsigned int compareThree(int num, int compare1, int compare2) {
     return 0;
 }
 
+int itoc( int n, char *s, int i ) {
+    if ( n < 0 ) {
+        s[i++] = '-';
+        i = itoc( -n, s, i );
+    } else {
+        if ( n >= 10 )
+            i = itoc( n / 10, s, i );
+        s[i++] = n % 10 + '0';
+        s[i] = 0;
+    }
+
+    return i;
+}
+
+void uart_int( int v ) {
+    char buffer[64];
+    
+    itoc( v, buffer, 0 );
+    uart_puts( buffer );
+}
+
+
 /**
  * Given the accelerometer values, output the direction (as an unsigned int) that our I2C device is moving
  * Directions: 0: None, 1: Left, 2: Right, 3: Down, 4: Up
 */
-unsigned int generateDirection(struct accelerations *accel) {
+char generateDirection(struct accelerations *accel) {
 
     // Check if movement is mostly in the horizontal direction
-    if (abs(accel -> Ax) > abs(accel -> Ay)) {
+    if (abs(accel -> Ax) > abs(accel -> Ay) & (abs(accel -> Ax) > 500) ) {
         if (accel -> Ax < 0) {
-            return 1; // Left direction
+            return 'u'; // Left direction
         }
-        return 2; // Right direction
+        return 'd'; // Right direction
     }
 
     // Check if movement is mostly in vertical direction (Y)
-    if (abs(accel -> Ay) > abs(accel -> Ax)) {
+    if ((abs(accel -> Ay) > abs(accel -> Ax)) & (abs(accel -> Ay) > 500) ) {
         if (accel -> Ay < 0) {
-            return 3; // Left direction
+            return 'r'; // Left direction
         }
-        return 4; // Right direction
+        return 'l'; // Right direction
     }
 
-    return 0;
+    return 'n';
 
 
 }
@@ -89,16 +105,16 @@ int main() {
     // uart_puts( "\n\n" );
     
     int aVals[6];
-    struct acclerations accel;
+    struct accelerations accel;
 
     while( 1 ) {
         bmi270GetAllData( aVals );
 
-        accel.Ax = aVals[0]
-        accel.Ay = aVals[1]
-        accel.Az = aVals[2]
+        accel.Ax = aVals[0];
+        accel.Ay = aVals[1];
+        accel.Az = aVals[2];
 
-        uart_puts(generateDirection(&accel))
+        uart_send(generateDirection(&accel));
 
         // uart_puts( "Ax: " );
         // uart_int( aVals[0] );

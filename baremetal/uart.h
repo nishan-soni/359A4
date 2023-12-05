@@ -29,3 +29,10 @@ void spin_for_cycles(int c);
 char uart_getc();
 void uart_puts(char *s);
 void uart_hex(unsigned int d);
+
+struct accelerations
+{
+    int Ax;
+    int Ay;
+    int Az;
+};
