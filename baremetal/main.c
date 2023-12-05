@@ -79,10 +79,10 @@ int main() {
     if ( error ) {
         uart_puts( "BMI270 not found\n" );
     } else {
-        uart_puts( "BMI270 found\n" );
+        // uart_puts( "BMI270 found\n" );
     }
 
-    uart_send(6)
+    uart_send('U');
 
 
     bmi270LoadConfigFile();
@@ -105,6 +105,7 @@ int main() {
     int aVals[6];
     while( 1 ) {
         bmi270GetAllData( aVals );
+        uart_send("N");
         // uart_puts( "Ax: " );
         // uart_int( aVals[0] );
         // uart_puts( "  Ay: " );

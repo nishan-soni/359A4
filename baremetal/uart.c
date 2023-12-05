@@ -115,13 +115,13 @@ char uart_getc() {
  * Display a string
  */
 void uart_puts(char *s) {
-    while(*s) {
-        // convert newline to carrige return + newline
-        if (*s=='\n') {
-            uart_send('\r');
-        }
-        uart_send(*s++);
-    }
+    // while(*s) {
+    //     // convert newline to carrige return + newline
+    //     if (*s=='\n') {
+    //         uart_send('\r');
+    //     }
+    //     uart_send(*s++);
+    // }
 }
 
 /**
