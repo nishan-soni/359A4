@@ -68,12 +68,12 @@ void uart_int( int v ) {
 int main() {
     delay(1000);
     
-    uart_puts( "\n----------------------------------------\n\nWelcome\n\n" );
+    // uart_puts( "\n----------------------------------------\n\nWelcome\n\n" );
     
     uart_init();
     initI2CPins();
     
-    uart_puts( "init done\n" );
+    // uart_puts( "init done\n" );
     
     int error = bmi270Init( 0x69 );
     if ( error ) {
@@ -81,6 +81,10 @@ int main() {
     } else {
         uart_puts( "BMI270 found\n" );
     }
+
+    uart_send(6)
+
+
     bmi270LoadConfigFile();
     
     bmi270SetMode( PERFORMANCE_MODE );
@@ -96,24 +100,24 @@ int main() {
     bmi270EnableGyrNoisePerf( );
     bmi270EnableGyrFilterPerf( );
     
-    uart_puts( "\n\n" );
+    // uart_puts( "\n\n" );
     
     int aVals[6];
     while( 1 ) {
         bmi270GetAllData( aVals );
-        uart_puts( "Ax: " );
-        uart_int( aVals[0] );
-        uart_puts( "  Ay: " );
-        uart_int( aVals[1] );
-        uart_puts( "  Az: " );
-        uart_int( aVals[2] );
-        uart_puts( "  Gx: " );
-        uart_int( aVals[3] );
-        uart_puts( "  Gy: " );
-        uart_int( aVals[4] );
-        uart_puts( "  Gz: " );
-        uart_int( aVals[5] );
-        uart_puts( "\n" );
+        // uart_puts( "Ax: " );
+        // uart_int( aVals[0] );
+        // uart_puts( "  Ay: " );
+        // uart_int( aVals[1] );
+        // uart_puts( "  Az: " );
+        // uart_int( aVals[2] );
+        // uart_puts( "  Gx: " );
+        // uart_int( aVals[3] );
+        // uart_puts( "  Gy: " );
+        // uart_int( aVals[4] );
+        // uart_puts( "  Gz: " );
+        // uart_int( aVals[5] );
+        // uart_puts( "\n" );
         
         
         delay( 10 );

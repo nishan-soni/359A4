@@ -5,7 +5,7 @@
 
 import pygame, sys, random
 from pygame.locals import *
-from smbus2 import SMBus
+import serial
 
 # Create the constants (go ahead and experiment with different values)
 BOARDWIDTH = 4  # number of columns in the board
@@ -40,6 +40,21 @@ UP = 'up'
 DOWN = 'down'
 LEFT = 'left'
 RIGHT = 'right'
+
+# UART Constants
+
+PORT = "/dev/ttyUSB1"
+BAUD = 115200
+
+def get_move():
+    """
+    Gets the move that should be executed via UART
+    """
+
+    s = serial.Serial(port = PORT, baudrate=BAUD)
+    while True:
+        b = s.read(4)
+        print(b)
 
 def main():
     global FPSCLOCK, DISPLAYSURF, BASICFONT, RESET_SURF, RESET_RECT, NEW_SURF, NEW_RECT, SOLVE_SURF, SOLVE_RECT
@@ -330,4 +345,5 @@ def resetAnimation(board, allMoves):
 
 
 if __name__ == '__main__':
-    main()
+    # main()
+    get_move()
