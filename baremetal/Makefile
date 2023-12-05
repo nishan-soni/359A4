@@ -5,7 +5,7 @@ COMPILEFLAGS = -g -c -O0 -Wall
 all: clean kernel8.img
 
 kernel8.img: start.o main.o uart.o mbox.o timer.o i2c.o bmi270.o
-	$(ARM64)-ld -nostdlib -nostartfiles start.o main.o uart.o mbox.o timer.o i2c.o bmi270.o -T link.ld -o kernel8.elf
+	$(ARM64)-ld -nostdlib start.o main.o uart.o mbox.o timer.o i2c.o bmi270.o -T link.ld -o kernel8.elf
 
 start.o: $(SOURCE)start.S
 	aarch64-elf-gcc -c $(SOURCE)start.S -o $(BUILD)start.o
