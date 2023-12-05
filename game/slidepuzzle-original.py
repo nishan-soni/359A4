@@ -5,7 +5,7 @@
 
 import pygame, sys, random
 from pygame.locals import *
-import serial
+# import serial
 
 # Create the constants (go ahead and experiment with different values)
 BOARDWIDTH = 4  # number of columns in the board
@@ -36,10 +36,10 @@ MESSAGECOLOR = WHITE
 XMARGIN = int((WINDOWWIDTH - (TILESIZE * BOARDWIDTH + (BOARDWIDTH - 1))) / 2)
 YMARGIN = int((WINDOWHEIGHT - (TILESIZE * BOARDHEIGHT + (BOARDHEIGHT - 1))) / 2)
 
-UP = 'up'
-DOWN = 'down'
-LEFT = 'left'
-RIGHT = 'right'
+UP = 'u'
+DOWN = 'd'
+LEFT = 'l'
+RIGHT = 'r'
 
 # UART Constants
 
@@ -52,9 +52,8 @@ def get_move():
     """
 
     s = serial.Serial(port = PORT, baudrate=BAUD)
-    while True:
-        b = s.read(4)
-        print(b)
+    b = s.read()
+    return b.decode('ascii')
 
 def main():
     global FPSCLOCK, DISPLAYSURF, BASICFONT, RESET_SURF, RESET_RECT, NEW_SURF, NEW_RECT, SOLVE_SURF, SOLVE_RECT
@@ -111,17 +110,26 @@ def main():
                     elif spotx == blankx and spoty == blanky - 1:
                         slideTo = DOWN
 
-            elif event.type == KEYUP:
-                # check if the user pressed a key to slide a tile
-                if event.key in (K_LEFT, K_a) and isValidMove(mainBoard, LEFT):
+            # elif event.type == KEYUP:
+            #     # check if the user pressed a key to slide a tile
+            #     if event.key in (K_LEFT, K_a) and isValidMove(mainBoard, LEFT):
+            #         slideTo = LEFT
+            #     elif event.key in (K_RIGHT, K_d) and isValidMove(mainBoard, RIGHT):
+            #         slideTo = RIGHT
+            #     elif event.key in (K_UP, K_w) and isValidMove(mainBoard, UP):
+            #         slideTo = UP
+            #     elif event.key in (K_DOWN, K_s) and isValidMove(mainBoard, DOWN):
+            #         slideTo = DOWN
+            else:
+                direct = get_move()
+                if direct == LEFT and isValidMove(mainBoard, LEFT):
                     slideTo = LEFT
-                elif event.key in (K_RIGHT, K_d) and isValidMove(mainBoard, RIGHT):
+                elif direct == RIGHT and isValidMove(mainBoard, RIGHT):
                     slideTo = RIGHT
-                elif event.key in (K_UP, K_w) and isValidMove(mainBoard, UP):
+                elif direct == UP and isValidMove(mainBoard, UP):
                     slideTo = UP
-                elif event.key in (K_DOWN, K_s) and isValidMove(mainBoard, DOWN):
+                elif direct == DOWN and isValidMove(mainBoard, DOWN):
                     slideTo = DOWN
-
         if slideTo:
             slideAnimation(mainBoard, slideTo, 'Click tile or press arrow keys to slide.', 8) # show slide on screen
             makeMove(mainBoard, slideTo)
@@ -345,5 +353,5 @@ def resetAnimation(board, allMoves):
 
 
 if __name__ == '__main__':
-    # main()
-    get_move()
+    main()
+    # get_move()
