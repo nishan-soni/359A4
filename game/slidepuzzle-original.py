@@ -41,18 +41,6 @@ DOWN = 'down'
 LEFT = 'left'
 RIGHT = 'right'
 
-def write_byte_data():
-    pass
-
-def read_byte_data():
-    pass
-
-def write_block_data():
-    pass
-
-def read_block_data():
-    pass
-
 def main():
     global FPSCLOCK, DISPLAYSURF, BASICFONT, RESET_SURF, RESET_RECT, NEW_SURF, NEW_RECT, SOLVE_SURF, SOLVE_RECT
 
