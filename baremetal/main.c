@@ -16,7 +16,7 @@
 char generateDirection(struct accelerations *accel) {
 
     // Check if movement is mostly in the X direction
-    if (abs(accel -> Ax) > abs(accel -> Ay) & (abs(accel -> Ax) > ACCEL_THRESHOLD) ) {
+    if ((abs(accel -> Ax) > abs(accel -> Ay)) & (abs(accel -> Ax) > ACCEL_THRESHOLD) ) {
         if (accel -> Ax < 0) {
             return 'u'; // Up
         }
@@ -42,6 +42,9 @@ int main() {
     // Initializing UART and I2C
     uart_init();
     initI2CPins();
+    bmi270Init( 0x69 );
+
+
     bmi270LoadConfigFile();
     bmi270SetMode( PERFORMANCE_MODE );
     bmi270SetAccRange( ACC_RANGE_2G );
