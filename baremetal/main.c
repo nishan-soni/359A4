@@ -5,33 +5,33 @@
 #include "i2c.h"
 #include "bmi270.h"
 #include <stdlib.h>
+#include "accel.h"
 
 #define ACCEL_THRESHOLD 400 // The threshold that our acceleration needs to pass to be valid
 
 
 /**
- * Given the accelerometer values, output the direction (as an unsigned int) that our I2C device is moving
- * Directions: 0: None, 1: Left, 2: Right, 3: Down, 4: Up
+ * Given the accelerometer values, output the direction (as a char) that our I2C device is accelerating in
 */
 char generateDirection(struct accelerations *accel) {
 
-    // Check if movement is mostly in the horizontal direction
-    if (abs(accel -> Ax) > abs(accel -> Ay) & (abs(accel -> Ax) > 500) ) {
+    // Check if movement is mostly in the X direction
+    if (abs(accel -> Ax) > abs(accel -> Ay) & (abs(accel -> Ax) > ACCEL_THRESHOLD) ) {
         if (accel -> Ax < 0) {
             return 'u'; // Up
         }
         return 'd'; // Down
     }
 
-    // Check if movement is mostly in vertical direction (Y)
-    if ((abs(accel -> Ay) > abs(accel -> Ax)) & (abs(accel -> Ay) > 500) ) {
+    // Check if movement is mostly in the Y direction
+    if ((abs(accel -> Ay) > abs(accel -> Ax)) & (abs(accel -> Ay) > ACCEL_THRESHOLD) ) {
         if (accel -> Ay < 0) {
             return 'r'; // Right
         }
         return 'l'; // Left
     }
 
-    return 'n';
+    return 'n'; // Return nothing if there is no movement
 
 }
 
@@ -39,22 +39,10 @@ char generateDirection(struct accelerations *accel) {
 int main() {
     delay(1000);
     
-    uart_puts( "\n----------------------------------------\n\nWelcome\n\n" );
-    
+    // Initializing UART and I2C
     uart_init();
     initI2CPins();
-    
-    uart_puts( "init done\n" );
-    
-    int error = bmi270Init( 0x69 );
-    if ( error ) {
-        uart_puts( "BMI270 not found\n" );
-    } else {
-        uart_puts( "BMI270 found\n" );
-    }
-
     bmi270LoadConfigFile();
-    
     bmi270SetMode( PERFORMANCE_MODE );
     bmi270SetAccRange( ACC_RANGE_2G );
     bmi270SetGyrRange( GYR_RANGE_1000 );
@@ -68,19 +56,18 @@ int main() {
     bmi270EnableGyrNoisePerf( );
     bmi270EnableGyrFilterPerf( );
     
-    uart_puts( "\n\n" );
     
     int aVals[6];
     struct accelerations accel;
 
     while( 1 ) {
+        // Continually get data for bmi270
         bmi270GetAllData( aVals );
-
         accel.Ax = aVals[0];
         accel.Ay = aVals[1];
         accel.Az = aVals[2];
 
-        uart_send(generateDirection(&accel));
+        uart_send(generateDirection(&accel)); // Generate the direction that the game should move in and send it via UART
 
         delay( 10 );
     }

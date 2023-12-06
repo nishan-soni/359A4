@@ -81,7 +81,7 @@ unsigned char i2cReadByteData( unsigned char devAddr, unsigned char regAddr ) {
 void i2cReadBlockData( unsigned char devAddr, unsigned char regAddr, int n, unsigned char *result ) {
     volatile unsigned int *bsc1 = (unsigned int *) BSC1_BASE;
 
-    // start transfer to I2C/BSC device to reguest register address
+    // start transfer to I2C/BSC device to request register address
     bsc1[ BSC_A ] = devAddr;     // A = device address
     bsc1[ BSC_DLEN ] = 1;       // register address
     bsc1[ BSC_FIFO ] = regAddr;         // value of the register
@@ -90,7 +90,6 @@ void i2cReadBlockData( unsigned char devAddr, unsigned char regAddr, int n, unsi
 
     while( !(bsc1[ BSC_S ] & 0x02) ); // Wait for write to be complete
     
-
     bsc1[ BSC_DLEN ] = n; // All the bytes that we want to read
     bsc1[ BSC_S ] =    (1 << 9) | (1 << 8) | (1 << 1); 	// clear CLKT, ERR, DONE in status register
     bsc1[ BSC_C ] =    (1 << 15) | (1 << 7) | (1 << 4) | 1; // enable controller, start tx, clear FIFO, read bit set
@@ -100,7 +99,7 @@ void i2cReadBlockData( unsigned char devAddr, unsigned char regAddr, int n, unsi
     // read from FIFO as space is available
     for( int i = 0; i < n; i++ ) {
         while ( (bsc1[ BSC_S ] & (1 << 4)) == 0 );  // wait while FIFO full
-        result[i] = bsc1[ BSC_FIFO ];                  // put value in FIFO to go out
+        result[i] = bsc1[ BSC_FIFO ]; // put value in result
     }
     
     delayus( 50 );

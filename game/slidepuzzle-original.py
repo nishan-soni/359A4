@@ -43,7 +43,6 @@ LEFT = 'l'
 RIGHT = 'r'
 
 # UART Constants
-
 PORT = "/dev/ttyUSB1"
 BAUD = 115200
 
@@ -54,7 +53,7 @@ def get_move():
 
     s = serial.Serial(port = PORT, baudrate=BAUD)
     b = s.read()
-    return b.decode('ascii')
+    return b.decode('ascii') # Return the byte as its ascii character
 
 def main():
     global FPSCLOCK, DISPLAYSURF, BASICFONT, RESET_SURF, RESET_RECT, NEW_SURF, NEW_RECT, SOLVE_SURF, SOLVE_RECT
@@ -84,7 +83,7 @@ def main():
 
         checkForQuit()
 
-        direct = get_move()
+        direct = get_move() # Get the direction that our game should move in using the get_move function
         if direct != 'n':
             if direct == LEFT and isValidMove(mainBoard, LEFT):
                 slideTo = LEFT
