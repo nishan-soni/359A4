@@ -477,17 +477,6 @@ void bmi270EnableGyrFilterPerf( ) {
 // get raw accelerometer data
 //
 void bmi270GetRawAccData( short *raw ) {
-/*
-    unsigned short xLo = i2cReadByteData( bmiAddress, ACC_X_LO );
-    unsigned short xHi = i2cReadByteData( bmiAddress, ACC_X_HI );
-    unsigned short yLo = i2cReadByteData( bmiAddress, ACC_Y_LO );
-    unsigned short yHi = i2cReadByteData( bmiAddress, ACC_Y_HI );
-    unsigned short zLo = i2cReadByteData( bmiAddress, ACC_Z_LO );
-    unsigned short zHi = i2cReadByteData( bmiAddress, ACC_Z_HI );
-    vals[0] = xHi << 8 | xLo;
-    vals[1] = yHi << 8 | yLo;
-    vals[2] = zHi << 8 | zLo;
-*/
     unsigned char bytes[6];
     i2cReadBlockData( bmiAddress, ACC_X_LO, 6, bytes );
     raw[0] = bytes[1] << 8 | bytes[0];

@@ -1,3 +1,4 @@
+// Tracks the accelration in each plane
 struct accelerations
 {
     int Ax;
